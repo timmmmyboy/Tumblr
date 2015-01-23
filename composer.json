@@ -8,5 +8,7 @@
             "email": "tim@timmmmyboy.com"
         }
     ],
-    "require": {}
+    "require": {
+      "tumblr/tumblr": "dev-master"
+    }
 }
