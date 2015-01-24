@@ -131,6 +131,60 @@ namespace IdnoPlugins\Tumblr {
         }
       });
 
+      // Push "media" to Tumblr
+      \Idno\Core\site()->addEventHook('post/media/tumblr',function(\Idno\Core\Event $event) {
+        $eventdata = $event->data();
+        $object = $eventdata['object'];
+        if ($attachments = $object->getAttachments()) {
+          foreach($attachments as $attachment) {
+            if ($this->hasTumblr()) {
+              if (!empty($eventdata['syndication_account'])) {
+                $hostname  = $eventdata['syndication_account'];
+                $tumblrAPI  = $this->connect();
+              } else {
+                $tumblrAPI  = $this->connect();
+              }
+
+              $attachments = $object->getAttachments();
+              if (!empty($attachments)) {
+                foreach ($attachments as $attachment) {
+                  if ($bytes = \Idno\Entities\File::getFileDataFromAttachment($attachment)) {
+                    $audiourl = $attachment['url'];
+                  }
+                }
+              }
+
+              $tags = str_replace('#','',implode(',', $object->getTags()));
+              $message = strip_tags($object->getDescription());
+
+              $access = $object->getAccess();
+
+              $params = array(
+                'tags' => $tags,
+                'type' => 'audio',
+                'caption' => $message,
+                'external_url' => $audiourl
+              );
+
+              if ($access != 'PUBLIC'){
+                $params['state']='private';
+              }
+
+              $response = $tumblrAPI->oauth_post('/blog/'.$hostname.'/post', $params);
+              if($response->meta->status=='201'){
+                $postparams = array(
+                  'id' => $response->response->id
+                );
+                $post = $tumblrAPI->get('/blog/'.$hostname.'/posts',$postparams);
+                $object->setPosseLink('tumblr', $post->response->posts[0]->post_url);
+                $object->save();
+              }
+
+            }
+          }
+        }
+      });
+
       // Push bookmarks to Tumblr
       \Idno\Core\site()->addEventHook('post/bookmark/tumblr', function (\Idno\Core\Event $event) {
         if ($this->hasTumblr()) {
