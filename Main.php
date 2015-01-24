@@ -29,51 +29,112 @@ namespace IdnoPlugins\Tumblr {
 
       \Idno\Core\site()->syndication()->registerService('tumblr', function () {
         return $this->hasTumblr();
-      }, array('article'));
+      }, array('note', 'article', 'image', 'media', 'rsvp', 'bookmark'));
 
       if ($this->hasTumblr()) {
         if (is_array(\Idno\Core\site()->session()->currentUser()->tumblr)) {
           foreach(\Idno\Core\site()->session()->currentUser()->tumblr as $username => $details) {
-            if (!in_array($username, ['user_token','user_secret','screen_name'])) {
+            if (!in_array($username, ['user_token','user_secret','avatar','title'])) {
               \Idno\Core\site()->syndication()->registerServiceAccount('tumblr', $username, $username);
             }
           }
         }
       }
 
-      // Function for articles
+      // Function for notes
       $article_handler = function (\Idno\Core\Event $event) {
         if ($this->hasTumblr()) {
           $eventdata = $event->data();
           $object     = $eventdata['object'];
           if (!empty($eventdata['syndication_account'])) {
-            $blogName  = $eventdata['syndication_account'];
+            $hostname  = $eventdata['syndication_account'];
             $tumblrAPI  = $this->connect();
           } else {
             $tumblrAPI  = $this->connect();
           }
           $status     = $object->getTitle();
-          $status .= ' ' . $object->getURL();
+          $tags = str_replace('#','',implode(',', $object->getTags()));
           $params = array(
-          'status' => $status
+            'tags' => $tags,
+            'type' => 'quote',
+            'quote' => $status,
+            'source' => $object->getURL()
           );
 
-          $response = $tumblrAPI->createPost($blogName, $params);
+          $response = $tumblrAPI->oauth_post('/blog/'.$hostname.'/post', $params);
+          if($response->meta->status=='201'){
+            $postparams = array(
+              'id' => $response->response->id
+            );
+            $post = $tumblrAPI->get('/blog/'.$hostname.'/posts',$postparams);
+            $object->setPosseLink('tumblr', $post->response->posts[0]->post_url);
+            $object->save();
+          }
+        }
+      };
 
-          if (!empty($tumblrAPI->response['response'])) {
-            if ($json = json_decode($tumblrAPI->response['response'],true)) {
-              if (!empty($json['posts'])) {
-                $object->setPosseLink('tumblr', $json['posts'][0]['post_url']);
-                $object->save();
+      // Push "notes" to Tumblr
+      \Idno\Core\site()->addEventHook('post/note/tumblr', $article_handler);
+
+
+      // Push images to Tumblr
+      \Idno\Core\site()->addEventHook('post/image/tumblr', function (\Idno\Core\Event $event) {
+        if ($this->hasTumblr()) {
+          $eventdata = $event->data();
+          $object     = $eventdata['object'];
+          if (!empty($eventdata['syndication_account'])) {
+            $hostname  = $eventdata['syndication_account'];
+            $tumblrAPI  = $this->connect();
+          } else {
+            $tumblrAPI  = $this->connect();
+          }
+
+          // No? Then we'll use the main event
+          if (empty($attachments)) {
+            $attachments = $object->getAttachments();
+          }
+
+          if (!empty($attachments)) {
+            foreach ($attachments as $attachment) {
+              if ($bytes = \Idno\Entities\File::getFileDataFromAttachment($attachment)) {
+                $media[]    = $bytes;
               }
             }
           }
 
-        }
-      };
+          $title = $object->getTitle();
+          $caption = $object->getDescription();
+          if($title){
+            $caption = '<strong>'.$title.'</strong><br />'.$caption;
+          }
 
-      // Push "articles" to Tumblr
-      \Idno\Core\site()->addEventHook('post/article/tumblr', $article_handler);
+          $tags = str_replace('#','',implode(',', $object->getTags()));
+          $access = $object->getAccess();
+
+          $params = array(
+            'tags' => $tags,
+            'type' => 'photo',
+            'caption' => $caption,
+            'link' => $object->getURL(),
+            'data' => $media
+          );
+          if ($access != 'PUBLIC'){
+            $params['state']='private';
+          }
+
+          $response = $tumblrAPI->oauth_post('/blog/'.$hostname.'/post', $params);
+          if($response->meta->status=='201'){
+            $postparams = array(
+              'id' => $response->response->id
+            );
+            $post = $tumblrAPI->get('/blog/'.$hostname.'/posts',$postparams);
+            $object->setPosseLink('tumblr', $post->response->posts[0]->post_url);
+            $object->save();
+          }
+
+        }
+      });
+
 
     }
 
@@ -153,7 +214,7 @@ namespace IdnoPlugins\Tumblr {
       }
 
       $urlParts = parse_url($input);
-      
+
       // remove www
       $domain = preg_replace('/^www\./', '', $urlParts['host']);
 

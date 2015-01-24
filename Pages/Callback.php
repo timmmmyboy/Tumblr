@@ -26,20 +26,32 @@ namespace IdnoPlugins\tumblr\Pages {
 
           // Use the getAcessToken method and pass through the oauth_verifier to get tokens;
           $token = $tumblrAPI->getAccessToken($oauth_verifier);
-
-            $user->tumblr = array('user_token' => $token['oauth_token'], 'user_secret' => $token['oauth_token_secret']);
-            $user->save();
-            \Idno\Core\site()->session()->addMessage('Tumblr credentials saved!');
-
+          $info = $tumblrAPI->oauth_get("/user/info");
+          $user->tumblr = array('user_token' => $token['oauth_token'], 'user_secret' => $token['oauth_token_secret']);
+          foreach($info->response->user->blogs as $blog){
+            $hostname = $tumblr->getHostname($blog->url);
+            $avatar = $tumblrAPI->oauth_get('/blog/'.$hostname.'/avatar');
+            \Idno\Core\site()->syndication()->registerServiceAccount('tumblr', $hostname, $blog->title);
+            $user->tumblr[$hostname] = array(
+              'user_token' => $token['oauth_token'],
+              'user_secret' => $token['oauth_token_secret'],
+              'avatar' => $avatar->response->avatar_url,
+              'title' => $blog->title
+              );
           }
 
-          if (!empty($_SESSION['onboarding_passthrough'])) {
-            unset($_SESSION['onboarding_passthrough']);
-            $this->forward(\Idno\Core\site()->config()->getURL() . 'begin/connect-forwarder');
-          }
-          $this->forward('/account/tumblr');
+          $user->save();
+          \Idno\Core\site()->session()->addMessage('Tumblr credentials saved!');
+
         }
+
+        if (!empty($_SESSION['onboarding_passthrough'])) {
+          unset($_SESSION['onboarding_passthrough']);
+          $this->forward(\Idno\Core\site()->config()->getURL() . 'begin/connect-forwarder');
+        }
+        $this->forward('/account/tumblr');
       }
     }
-
   }
+
+}
