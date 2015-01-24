@@ -89,19 +89,6 @@ namespace IdnoPlugins\Tumblr {
             $tumblrAPI  = $this->connect();
           }
 
-          // No? Then we'll use the main event
-          if (empty($attachments)) {
-            $attachments = $object->getAttachments();
-          }
-
-          if (!empty($attachments)) {
-            foreach ($attachments as $attachment) {
-              if ($bytes = \Idno\Entities\File::getFileDataFromAttachment($attachment)) {
-                $media[]    = $bytes;
-              }
-            }
-          }
-
           $title = $object->getTitle();
           $caption = $object->getDescription();
           if($title){
@@ -110,13 +97,57 @@ namespace IdnoPlugins\Tumblr {
 
           $tags = str_replace('#','',implode(',', $object->getTags()));
           $access = $object->getAccess();
+          $imageurl = $object->getFirstImageSourceFromBody();
 
           $params = array(
             'tags' => $tags,
             'type' => 'photo',
             'caption' => $caption,
             'link' => $object->getURL(),
-            'data' => $media
+            'source' => $imageurl
+          );
+          if ($access != 'PUBLIC'){
+            $params['state']='private';
+          }
+
+          $response = $tumblrAPI->oauth_post('/blog/'.$hostname.'/post', $params);
+          if($response->meta->status=='201'){
+            $postparams = array(
+              'id' => $response->response->id
+            );
+            $post = $tumblrAPI->get('/blog/'.$hostname.'/posts',$postparams);
+            $object->setPosseLink('tumblr', $post->response->posts[0]->post_url);
+            $object->save();
+          }
+
+        }
+      });
+
+      // Push bookmarks to Tumblr
+      \Idno\Core\site()->addEventHook('post/bookmark/tumblr', function (\Idno\Core\Event $event) {
+        if ($this->hasTumblr()) {
+          $eventdata = $event->data();
+          $object     = $eventdata['object'];
+          if (!empty($eventdata['syndication_account'])) {
+            $hostname  = $eventdata['syndication_account'];
+            $tumblrAPI  = $this->connect();
+          } else {
+            $tumblrAPI  = $this->connect();
+          }
+
+          $url = $object->body;
+          $title = $object->getTitleFromURL($url);
+          $tags = str_replace('#','',implode(',', $object->getTags()));
+          $desc = str_replace($object->getTags(),'',$object->description);
+
+          $access = $object->getAccess();
+
+          $params = array(
+            'tags' => $tags,
+            'type' => 'link',
+            'title' => $title,
+            'url' => $url,
+            'description' => $desc
           );
           if ($access != 'PUBLIC'){
             $params['state']='private';
