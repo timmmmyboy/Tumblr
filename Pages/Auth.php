@@ -16,7 +16,6 @@
             {
                 $this->gatekeeper(); // Logged-in users only
                 if ($tumblr = \Idno\Core\site()->plugins()->get('Tumblr')) {
-                  session_start();
                     $login_url = $tumblr->getAuthURL();
                     if (!empty($login_url)) {
                         $this->forward($login_url); exit;
