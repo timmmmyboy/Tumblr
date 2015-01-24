@@ -1,4 +1,7 @@
-# Tumblr
+#Warning!
+####This plugin is not ready for you to use. Star the project and watch the commits and this message will be gone as soon everything is working properly.
+
+# Tumblr Syndication for Known
 Known plugin to syndicate your content in Known to Tumblr
 
 Installation
