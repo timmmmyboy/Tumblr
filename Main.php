@@ -89,19 +89,6 @@ namespace IdnoPlugins\Tumblr {
             $tumblrAPI  = $this->connect();
           }
 
-          // No? Then we'll use the main event
-          if (empty($attachments)) {
-            $attachments = $object->getAttachments();
-          }
-
-          if (!empty($attachments)) {
-            foreach ($attachments as $attachment) {
-              if ($bytes = \Idno\Entities\File::getFileDataFromAttachment($attachment)) {
-                $media[]    = $bytes;
-              }
-            }
-          }
-
           $title = $object->getTitle();
           $caption = $object->getDescription();
           if($title){
@@ -110,17 +97,26 @@ namespace IdnoPlugins\Tumblr {
 
           $tags = str_replace('#','',implode(',', $object->getTags()));
           $access = $object->getAccess();
+          $attachments = $object->getAttachments();
+          if (!empty($attachments)) {
+            foreach ($attachments as $attachment) {
+              if ($bytes = \Idno\Entities\File::getFileDataFromAttachment($attachment)) {
+                $imageurl = $attachment['url'];
+              }
+            }
+          }
 
           $params = array(
             'tags' => $tags,
             'type' => 'photo',
             'caption' => $caption,
             'link' => $object->getURL(),
-            'data' => $media
+            'source' => $imageurl
           );
           if ($access != 'PUBLIC'){
             $params['state']='private';
           }
+
 
           $response = $tumblrAPI->oauth_post('/blog/'.$hostname.'/post', $params);
           if($response->meta->status=='201'){
