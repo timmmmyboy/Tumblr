@@ -24,7 +24,7 @@ Released under the Apache 2.0 license: http://www.apache.org/licenses/LICENSE-2.
 Contains
 --------
 
-Also contains the [official PHP client for the Tumblr API](https://github.com/tumblr/tumblr.php), which is released under the Apache 2.0 license. Source: http://www.apache.org/licenses/LICENSE-2.0.html
+Also contains the [tumblrPHP oAuth library](https://github.com/gregavola/tumblrPHP)
 
 Credits
 -------
