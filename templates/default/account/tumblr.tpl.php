@@ -2,10 +2,17 @@
 
   <div class="span10 offset1">
     <?=$this->draw('account/menu')?>
-    <h1>Tumblr</h1>
-
   </div>
 
+</div>
+
+<div class="row">
+  <div class="span3 offset1">
+    <img src="<?= \Idno\Core\site()->config()->getDisplayURL() ?>IdnoPlugins/Tumblr/assets/logo.gif" alt="Tumblr" style="margin-top:-25px;margin-bottom:25px;" />
+  </div>
+  <div class="span7">
+    <img src="<?= \Idno\Core\site()->config()->getDisplayURL() ?>IdnoPlugins/Tumblr/assets/about_buttons.png" alt="icons" style="margin-top:-25px;margin-bottom:25px;" />
+  </div>
 </div>
 <div class="row">
   <div class="span10 offset1">
@@ -51,10 +58,6 @@
             <div class="control-group">
               <div class="controls-config">
 
-                <p>
-                  Nice! You are now connected to Tumblr.
-                </p>
-
                   <?php
                   $tumblr = \Idno\Core\site()->plugins()->get('Tumblr');
                   $tumblrAPI = $tumblr->connect();
@@ -66,7 +69,7 @@
                       $bloginfo = $tumblrAPI->get('/blog/'.$account['username'].'/info');
                       ?>
 
-                      <div class="well row span">
+                      <div class="well row">
                         <div class="span1">
                           <img src="<?php echo $avatar->response->avatar_url ?>"/>
                         </div>
