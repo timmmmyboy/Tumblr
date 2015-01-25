@@ -33,7 +33,7 @@
 
                     <div class="social span6">
                       <p>
-                        <a href="<?= $vars['oauth_url'] ?>" class="connect tw">Connect Tumblr</a>
+                        <a href="<?= $vars['oauth_url'] ?>" class="btn btn-lg"><i class="icon-tumblr"></i>  Connect Tumblr</a>
                       </p>
                     </div>
 
@@ -50,51 +50,39 @@
             ?>
             <div class="control-group">
               <div class="controls-config">
-                <div class="row">
-                  <div class="span10">
-                    <p>
-                      Nice! You are now connected to Tumblr.
-                    </p>
 
-                    <?php
-                    $tumblr = \Idno\Core\site()->plugins()->get('Tumblr');
-                    $tumblrAPI = $tumblr->connect();
+                <p>
+                  Nice! You are now connected to Tumblr.
+                </p>
 
-                    if ($accounts = \Idno\Core\site()->syndication()->getServiceAccounts('tumblr')) {
+                  <?php
+                  $tumblr = \Idno\Core\site()->plugins()->get('Tumblr');
+                  $tumblrAPI = $tumblr->connect();
 
-                      foreach ($accounts as $account) {
-                        $avatar = $tumblrAPI->oauth_get('/blog/'.$account['username'].'/avatar');
-                        $bloginfo = $tumblrAPI->get('/blog/'.$account['username'].'/info');
-                        ?>
+                  if ($accounts = \Idno\Core\site()->syndication()->getServiceAccounts('tumblr')) {
 
-                        <div class="well">
-                          <div class="row">
-                            <div class="span1">
-                              <img src="<?php echo $avatar->response->avatar_url ?>"/>
-                            </div>
-                            <div class="span6">
-                              <h3><?php echo $bloginfo->response->blog->title; ?></h3>
-                            </div>
-                          </div>
-                        </div>
-                          <?php
-
-                        }
-
-                        ?>
-                        <div class="social span 6">
-                          <input type="hidden" name="remove" value="1"/>
-                          <button type="submit"
-                          class="connect connected">Disconnect Tumblr</button>
-                        </div>
-                        <?php
-
-                      }
-
+                    foreach ($accounts as $account) {
+                      $avatar = $tumblrAPI->oauth_get('/blog/'.$account['username'].'/avatar');
+                      $bloginfo = $tumblrAPI->get('/blog/'.$account['username'].'/info');
                       ?>
 
-                  </div>
-                </div>
+                      <div class="well row span">
+                        <div class="span1">
+                          <img src="<?php echo $avatar->response->avatar_url ?>"/>
+                        </div>
+                        <div class="span6">
+                          <h3><?php echo $bloginfo->response->blog->title; ?></h3>
+                        </div>
+                      </div>
+                      <?php
+
+                    }
+
+                  }
+
+                  ?>
+                  <input type="hidden" name="remove" value="1"/>
+                  <button type="submit" class="btn btn-large btn-danger"><i class="icon-tumblr"></i> Disconnect Tumblr</button>
               </div>
             </div>
 
