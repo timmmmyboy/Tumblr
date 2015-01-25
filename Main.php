@@ -154,20 +154,14 @@ namespace IdnoPlugins\Tumblr {
             'link' => $object->getURL(),
             'source' => $imageurl
           );
-          $file = fopen("/Users/timowens/Sites/known/params.txt","w");
-          echo fwrite($file,print_r($params,true));
-          fclose($file);
 
           $access = $object->getAccess();
           if ($access != 'PUBLIC'){
             $params['state']='private';
           }
 
-
           $response = $tumblrAPI->oauth_post('/blog/'.$hostname.'/post', $params);
-          $file = fopen("/Users/timowens/Sites/known/tumblr.txt","w");
-          echo fwrite($file,print_r($response,true));
-          fclose($file);
+
           if($response->meta->status=='201'){
             $postparams = array(
               'id' => $response->response->id

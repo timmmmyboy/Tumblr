@@ -72,19 +72,22 @@
                             <div class="span1">
                               <img src="<?php echo $avatar->response->avatar_url ?>"/>
                             </div>
-                            <div class="span4">
+                            <div class="span6">
                               <h3><?php echo $bloginfo->response->blog->title; ?></h3>
-                            </div>
-                            <div class="span4">
-                              <input type="hidden" name="remove" value="<?= $account['username'] ?>"/>
-                              <button type="submit"
-                              class="connect tw connected">Disconnect</button>
                             </div>
                           </div>
                         </div>
                           <?php
 
                         }
+
+                        ?>
+                        <div class="social span 6">
+                          <input type="hidden" name="remove" value="1"/>
+                          <button type="submit"
+                          class="connect connected">Disconnect Tumblr</button>
+                        </div>
+                        <?php
 
                       }
 
