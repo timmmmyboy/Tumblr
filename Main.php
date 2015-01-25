@@ -34,8 +34,9 @@ namespace IdnoPlugins\Tumblr {
       if ($this->hasTumblr()) {
         if (is_array(\Idno\Core\site()->session()->currentUser()->tumblr)) {
           foreach(\Idno\Core\site()->session()->currentUser()->tumblr as $username => $details) {
+            $usernicename = explode('.',$username);
             if (!in_array($username, ['user_token','user_secret','avatar','title'])) {
-              \Idno\Core\site()->syndication()->registerServiceAccount('tumblr', $username, $username);
+              \Idno\Core\site()->syndication()->registerServiceAccount('tumblr', $username, $usernicename[0]);
             }
           }
         }
