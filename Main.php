@@ -329,11 +329,13 @@ namespace IdnoPlugins\Tumblr {
     */
     function hasTumblr()
     {
-      if (\Idno\Core\site()->session()->currentUser()->tumblr) {
-        return true;
-      }
-
-      return false;
+        if (!(\Idno\Core\site()->session()->currentUser())) {
+            return false;
+        }
+        if (!empty(\Idno\Core\site()->session()->currentUser()->tumblr)) {
+            return true;
+        }
+        return false;
     }
 
     /**
