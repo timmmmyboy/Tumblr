@@ -1,1 +1,1 @@
-<i class="icon-tumblr"></i>
+<i class="fa fa-tumblr"></i>

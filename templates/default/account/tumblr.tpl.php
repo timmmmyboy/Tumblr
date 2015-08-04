@@ -1,21 +1,21 @@
 <div class="row">
 
-  <div class="span10 offset1">
+  <div class="col-md-10 col-md-offset-1">
     <?=$this->draw('account/menu')?>
   </div>
 
 </div>
 
 <div class="row">
-  <div class="span3 offset1">
-    <img src="<?= \Idno\Core\site()->config()->getDisplayURL() ?>IdnoPlugins/Tumblr/assets/logo.gif" alt="Tumblr" style="margin-top:-25px;margin-bottom:25px;" />
+  <div class="col-md-3 col-md-offset-1">
+    <img src="<?= \Idno\Core\site()->config()->getDisplayURL() ?>IdnoPlugins/Tumblr/assets/logo.gif" alt="Tumblr" style="margin-bottom:25px;" />
   </div>
-  <div class="span7">
-    <img src="<?= \Idno\Core\site()->config()->getDisplayURL() ?>IdnoPlugins/Tumblr/assets/about_buttons.png" alt="icons" style="margin-top:-25px;margin-bottom:25px;" />
+  <div class="col-md-7">
+    <img src="<?= \Idno\Core\site()->config()->getDisplayURL() ?>IdnoPlugins/Tumblr/assets/about_buttons.png" alt="icons" style="margin-bottom:25px;" />
   </div>
 </div>
 <div class="row">
-  <div class="span10 offset1">
+  <div class="col-md-10 col-md-offset-1">
     <?php
 
     if (!empty(\Idno\Core\site()->config()->tumblr['consumer_key']) && !empty(\Idno\Core\site()->config()->tumblr['consumer_secret'])) {
@@ -30,7 +30,7 @@
             <div class="controls-config">
 
               <div class="row">
-                <div class="span6">
+                <div class="col-md-6">
                   <p>
                     Easily share updates, posts, and pictures to Tumblr. </p>
                     <p>
@@ -40,7 +40,7 @@
 
                     <div class="social span6">
                       <p>
-                        <a href="<?= $vars['oauth_url'] ?>" class="btn btn-lg"><i class="icon-tumblr"></i>  Connect Tumblr</a>
+                        <a href="<?= $vars['oauth_url'] ?>" class="btn btn-lg"><i class="fa fa-tumblr"></i>  Connect Tumblr</a>
                       </p>
                     </div>
 
@@ -70,10 +70,10 @@
                       ?>
 
                       <div class="well row">
-                        <div class="span1">
+                        <div class="col-md-1">
                           <img src="<?php echo $avatar->response->avatar_url ?>"/>
                         </div>
-                        <div class="span6">
+                        <div class="col-md-6">
                           <h3><?php echo $bloginfo->response->blog->title; ?></h3>
                         </div>
                       </div>
@@ -85,7 +85,7 @@
 
                   ?>
                   <input type="hidden" name="remove" value="1"/>
-                  <button type="submit" class="btn btn-large btn-danger"><i class="icon-tumblr"></i> Disconnect Tumblr</button>
+                  <button type="submit" class="btn btn-large btn-danger"><i class="fa fa-tumblr"></i> Disconnect Tumblr</button>
               </div>
             </div>
 
@@ -108,7 +108,7 @@
           <div class="control-group">
             <div class="controls-config">
               <div class="row">
-                <div class="span6">
+                <div class="col-md-6">
                   <p>
                     Before you can begin connecting to Tumblr, you need to set it up.
                   </p>
