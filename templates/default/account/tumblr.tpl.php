@@ -40,7 +40,7 @@
 
                     <div class="social span6">
                       <p>
-                        <a href="<?= $vars['oauth_url'] ?>" class="btn btn-lg"><i class="icon-tumblr"></i>  Connect Tumblr</a>
+                        <a href="<?= $vars['oauth_url'] ?>" class="btn btn-lg"><i class="fa fa-tumblr"></i>  Connect Tumblr</a>
                       </p>
                     </div>
 
@@ -85,7 +85,7 @@
 
                   ?>
                   <input type="hidden" name="remove" value="1"/>
-                  <button type="submit" class="btn btn-large btn-danger"><i class="icon-tumblr"></i> Disconnect Tumblr</button>
+                  <button type="submit" class="btn btn-large btn-danger"><i class="fa fa-tumblr"></i> Disconnect Tumblr</button>
               </div>
             </div>
 
